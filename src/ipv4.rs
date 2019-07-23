@@ -134,7 +134,6 @@ impl Address {
         }
 
         let mask: Vec<&str> = mask.split(".").collect();
-        println!("{:?}",mask);
 
         if mask.len() != 4 {
             return Err("Incorrect format ! Mask must be write like : X.X.X.X");
