@@ -223,13 +223,13 @@ impl Address {
 
     pub fn public(&self) -> bool {
         if self.ip[0] == 10 {
-            return true;
-        } else if self.ip[0] == 172 && self.ip[1] >= 16 && self.ip[1] < 32{
-            return true;
-        } else if self.ip[0] == 192 && self.ip[1] == 168{
-            return true;
-        } else {
             return false;
+        } else if self.ip[0] == 172 && self.ip[1] >= 16 && self.ip[1] < 32{
+            return false;
+        } else if self.ip[0] == 192 && self.ip[1] == 168{
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -250,14 +250,28 @@ impl Address {
 
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let ip = convert::vec_to_ip(&self.ip);
-        let subnet = convert::vec_to_ip(&self.subnet_address());
-        let first_ip = convert::vec_to_ip(&self.first_address());
-        let last_ip = convert::vec_to_ip(&self.last_address());
-        let broadcast = convert::vec_to_ip(&self.broadcast_address());
-        let free_address = self.free_address();
-        let cidr = self.cidr();
-        write!(f, "{} {} {} {} {} {} {} {} {}", ip, subnet, cidr , first_ip, last_ip, broadcast, free_address, self.public(), self.class())
+        let ip = format!("IP address : {}",convert::vec_to_ip(&self.ip));
+        let mask= format!("Mask : {} / CIDR : {}",convert::vec_to_ip(&self.mask), self.cidr());
+
+        let class = format!("This network belongs to Class {}",self.class().to_uppercase());
+        let public = format!("It's a {} network", match self.public() {
+            true => "public",
+            false => "private",
+        });
+
+
+
+        let subnet = format!("Network address : {}",convert::vec_to_ip(&self.subnet_address()));
+        let broadcast = format!("Broadcast address : {}",convert::vec_to_ip(&self.broadcast_address()));
+
+        let first_ip = format!("First IP : {}", convert::vec_to_ip(&self.first_address()));
+        let last_ip = format!("Last IP : {}",convert::vec_to_ip(&self.last_address()));
+        let free_address = format!("Number of free address : {}",self.free_address());
+
+
+
+
+        write!(f,"{}\n{}\n\n{}\n{}\n\n{}\n{}\n\n{}\n{}\n{}",ip,mask,class,public,subnet,broadcast,first_ip,last_ip,free_address)
     }
 }
 
