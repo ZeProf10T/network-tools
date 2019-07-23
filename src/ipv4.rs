@@ -1,5 +1,5 @@
 use std::fmt;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 
 pub mod convert {
     pub fn vec_to_binary(vector: &Vec<u8>) -> String {
@@ -91,7 +91,6 @@ pub struct Address {
 impl Address {
     pub fn is_valid_ipv4(ip: &str) -> Result<Vec<u8>,&str> {
         let ip: Vec<&str> = ip.split(".").collect();
-        let range = 0 ..= 255;
 
         if ip.len() != 4 {
             return Err("Incorrect format ! IP must be write like : X.X.X.X");
@@ -111,23 +110,49 @@ impl Address {
     }
 
     pub fn is_valid_mask(mask: &str) -> Result<Vec<u8>,&str> {
+        let range: RangeInclusive<u8> = 1 ..= 32;
+        let mut mask = String::from(mask);
+
+        match mask.parse::<u8>() {
+            Ok(n) => {
+                if range.contains(&n){
+                    let mut t = String::new();
+                    for i in 0..n {
+                        t += "1";
+                    }
+                    for i in n..32 {
+                        t += "0";
+                    }
+
+                    mask = convert::vec_to_ip(&convert::binary_to_vec(t));
+
+                } else {
+                    return Err("CIDR format require a mask in [1;31] range");
+                }
+            },
+           _ => {}
+        }
+
         let mask: Vec<&str> = mask.split(".").collect();
+        println!("{:?}",mask);
 
         if mask.len() != 4 {
             return Err("Incorrect format ! Mask must be write like : X.X.X.X");
         }
 
+        // Delete automatically numbers > 255 and numbers < 0, because we use u8 type
         let mask: Vec<u8> = mask
             .iter()
             .map(|i| i.parse::<u8>())
             .filter_map(Result::ok)
             .collect();
 
+
         if mask.len() != 4 {
             return Err("Invalid numbers ! Mask must be write like : X.X.X.X with X in the range [0;255]")
         }
 
-        println!("{:?}",mask);
+        // println!("{:?}",mask);
         return Ok(mask);
     }
 
@@ -235,6 +260,18 @@ impl fmt::Display for Address {
         let cidr = self.cidr();
         write!(f, "{} {} {} {} {} {} {} {} {}", ip, subnet, cidr , first_ip, last_ip, broadcast, free_address, self.public(), self.class())
     }
+}
+
+pub fn calculator(address: &str, mask: &str)  {
+    match Address::is_valid_ipv4(address) {
+        Ok(ip) => {
+            match Address::is_valid_mask(mask) {
+                Ok(mask) => { println!("{}", Address { ip, mask }) },
+                Err(err) => { eprintln!("{}", err) }
+            }
+        },
+        Err(err) => { eprintln!("{}", err) }
+    };
 }
 
 
