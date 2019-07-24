@@ -1,11 +1,13 @@
 extern crate clap;
 use clap::{Arg, App};
-
 mod ipv4;
+mod info;
+use info::{Info,search};
 use ipv4::{Address, calculator};
 
+
 fn main() {
-    let matches = App::new("IP tools")
+    let matches = App::new("Network tools")
         .version("0.1.0")
         .author("Léo Huteau <huteau890@gmail.com>")
         .about("IP calculator, IP information, ...")
@@ -36,6 +38,12 @@ fn main() {
                 } else {
                     eprintln!("Mask required in subnet calculator mode")
                 }
+        },
+        "information" | "info" => {
+            match search(matches.value_of("address").unwrap()) {
+                Ok(data) => println!("{}",data),
+                Err(err) => eprintln!("{}",err),
+            }
         },
         _ => { eprintln!("Choose type of operation, ex: calculator")},
 
