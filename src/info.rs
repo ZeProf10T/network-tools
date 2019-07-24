@@ -25,13 +25,13 @@ impl fmt::Display for Info {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let query = format!("Address : {}",self.query);
         let reverse = format!("Reverse DNS : {}",self.reverse);
-        let address = format!("Host in {} - {}",self.country, self.city);
-        let coord = format!("Localisation : {} - {}", self.lon, self.lat);
+        let address = format!("Host in : {} - {}",self.country, self.city);
+        let coord = format!("Coord : {} {}", self.lon, self.lat);
         let org = format!("Organisation : {}", self.org);
         let isp = format!("ISP : {}", self.isp);
         let fai = format!("AS : {}", self.r#as);
 
-        write!(f, "{}\n{}\n\n{}\n{}\n\n{}\n{}\n{}", query, reverse, address, coord, org, isp, fai)
+        write!(f, "\n{}\n{}\n\n{}\n{}\n\n{}\n{}\n{}\n", query, reverse, address, coord, org, isp, fai)
     }
 }
 

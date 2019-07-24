@@ -271,7 +271,7 @@ impl fmt::Display for Address {
 
 
 
-        write!(f,"{}\n{}\n\n{}\n{}\n\n{}\n{}\n\n{}\n{}\n{}",ip,mask,class,public,subnet,broadcast,first_ip,last_ip,free_address)
+        write!(f,"\n{}\n{}\n\n{}\n{}\n\n{}\n{}\n\n{}\n{}\n{}\n",ip,mask,class,public,subnet,broadcast,first_ip,last_ip,free_address)
     }
 }
 
