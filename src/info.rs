@@ -35,6 +35,8 @@ impl fmt::Display for Info {
     }
 }
 
+
+
 pub fn search(address: &str) -> Result<Info, reqwest::Error> {
     let data: Info = reqwest::get(format!("http://ip-api.com/json/{}?fields=245759", address).as_str())?
         .error_for_status()?

@@ -61,7 +61,7 @@ pub mod convert {
         return result;
     }
 
-    pub fn bytes_or(a: String, b: String) -> String {
+    pub fn _bytes_or(a: String, b: String) -> String {
         let mut result = String::new();
         let mut a = a.chars();
         let mut b = b.chars();
@@ -117,10 +117,10 @@ impl Address {
             Ok(n) => {
                 if range.contains(&n){
                     let mut t = String::new();
-                    for i in 0..n {
+                    for _i in 0..n {
                         t += "1";
                     }
-                    for i in n..32 {
+                    for _i in n..32 {
                         t += "0";
                     }
 

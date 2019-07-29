@@ -1,9 +1,9 @@
 extern crate clap;
 use clap::{Arg, App};
+
 mod ipv4;
 mod info;
-use info::{Info,search};
-use ipv4::{Address, calculator};
+mod scanner;
 
 
 fn main() {
@@ -31,7 +31,7 @@ fn main() {
     match matches.value_of("operation").unwrap() {
         "calculator" | "calc" => {
                 if matches.is_present("address") && matches.is_present("mask") {
-                    calculator(
+                    ipv4::calculator(
                         matches.value_of("address").unwrap(),
                         matches.value_of("mask").unwrap()
                     );
@@ -40,14 +40,16 @@ fn main() {
                 }
         },
         "information" | "info" => {
-            match search(matches.value_of("address").unwrap()) {
+            match info::search(matches.value_of("address").unwrap()) {
                 Ok(data) => println!("{}",data),
                 Err(err) => eprintln!("{}",err),
             }
         },
-        _ => { eprintln!("Choose type of operation, ex: calculator")},
-
-        }
+        "scanner" | "scan" => {
+            scanner::scan(matches.value_of("address").unwrap())
+         }
+        _ => eprintln!("Choose type of operation, ex: calculator"),
+    }
 
 
 
