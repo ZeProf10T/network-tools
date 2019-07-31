@@ -1,59 +1,63 @@
-extern crate clap;
-use clap::{Arg, App};
+extern crate console;
+extern crate dialoguer;
 
 mod ipv4;
 mod info;
 mod scanner;
 
+use dialoguer::{theme::ColorfulTheme, Select, Input};
+use console::Style;
 
 fn main() {
-    let matches = App::new("Network tools")
-        .version("0.1.0")
-        .author("Léo Huteau <huteau890@gmail.com>")
-        .about("IP calculator, IP information, ...")
-        .arg(Arg::with_name("operation")
-            .required(true)
-            .value_name("operation")
-            .help("info | calculator ")
-        )
-        .arg(Arg::with_name("address")
-            .required(true)
-            .value_name("address")
-            .help("192.168.0.25 | github.com")
-        )
-        .arg(Arg::with_name("mask")
-            .required(false)
-            .value_name("mask")
-            .help("255.255.255.0 | 24")
-        )
-        .get_matches();
+    let selections = &[
+        "Address information",
+        "Port scanner",
+        "IP calculator",
+    ];
 
-    match matches.value_of("operation").unwrap() {
-        "calculator" | "calc" => {
-                if matches.is_present("address") && matches.is_present("mask") {
-                    ipv4::calculator(
-                        matches.value_of("address").unwrap(),
-                        matches.value_of("mask").unwrap()
-                    );
-                } else {
-                    eprintln!("Mask required in subnet calculator mode")
-                }
-        },
-        "information" | "info" => {
-            match info::search(matches.value_of("address").unwrap()) {
+    let selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Choose a tool")
+        .default(0)
+        .items(&selections[..])
+        .interact()
+        .unwrap();
+
+    match selection {
+        0 => {
+            let address: String = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Address")
+                .interact()
+                .unwrap();
+
+            match info::search(address.as_str()) {
                 Ok(data) => println!("{}",data),
                 Err(err) => eprintln!("{}",err),
             }
+
         },
-        "scanner" | "scan" => {
-            scanner::scan(matches.value_of("address").unwrap())
-         }
-        _ => eprintln!("Choose type of operation, ex: calculator"),
+        1 => {
+            let address: String= Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Address")
+                .interact()
+                .unwrap();
+
+            scanner::scan(address.as_str())
+        },
+        2 => {
+            let address: String = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Address")
+                .interact()
+                .unwrap();
+
+            let mask: String = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Mask")
+                .interact()
+                .unwrap();
+
+            ipv4::calculator(address.as_str(), mask.as_str());
+        },
+        _ => {},
     }
-
-
-
-
 
 }
 
